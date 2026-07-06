@@ -1,20 +1,4 @@
 {
-    "ktj":
-    {
-        "r" : "4",
-        "k" : "k",
-        "C" : "dZ",
-        "n" : "n",
-        "t" : "t",
-        "s" : "s"
-    },
-    "jtk":
-    {
-        "4" : "r",
-        "k" : "k",
-        "dZ" : "C",
-        "n" : "n",
-        "t" : "t",
-        "s" : "s"
-    }
+    "jpnTokor": "list/jpnTokor.json",
+    "korTojpn": "list/korTojpn.json"
 }
