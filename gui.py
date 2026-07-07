@@ -10,7 +10,7 @@ class VsqxConverterGUI:
         self.create_widgets()
         self.window.mainloop()
     def create_widgets(self):
-        tk.Button(self.window, text="Korean to Japanese", command=lambda: self.file_dialog("korTojpn")).pack(pady=10)
+        tk.Button(self.window, text="Japanese to Korean", command=lambda: self.file_dialog("jpnTokor")).pack(pady=10)
 
         pass
     def file_dialog(self,type):
