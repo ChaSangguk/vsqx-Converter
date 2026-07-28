@@ -11,6 +11,12 @@
         "ya" : "y a",
         "yu" : "y u",
         "yo" : "y o",
-        "oa" : "w a"
+        "oa" : "w a",
+        "k i" : "k' i",
+        "k ya" : "k' a",
+        "k yu" : "k' u",
+        "k yo" : "k' o",
+        "m ya" : "m' a",
+        "m yu" : "m' u"
     }
 }
