@@ -8,17 +8,19 @@ vsqx 파일 내 vstrack, vspart, note내 <p> 값을 파싱하여 미리 준비�
 class VsqxConverter:
     NS: Dict[str, str] = {"v4": "http://www.yamaha.co.jp/vocaloid/schema/vsq4/"}
     vsqx_file: etree._ElementTree | None
-    convert_file: Dict[str, str] | None
+    convert_file: Dict[str, Dict[str, str]] | None
 
-    def __init__(self, vsqx_file: etree._ElementTree | None = None, convert_file: Dict[str, str] | None = None) -> None:
+    def __init__(self, vsqx_file: etree._ElementTree | None = None, convert_file: Dict[str, Dict[str, str]] | None = None) -> None:
         self.vsqx_file = vsqx_file
         self.convert_file = convert_file
 
-    def convert(self, vsqx_file: etree._ElementTree | None = None, convert_file: Dict[str, str] | None = None) -> bytes:
+    def convert(self, vsqx_file: etree._ElementTree | None = None, convert_file: Dict[str, Dict[str, str]] | None = None) -> bytes:
         if vsqx_file is None:
             vsqx_file = self.vsqx_file
         if convert_file is None:
             convert_file = self.convert_file
+
+        
         assert vsqx_file is not None, "vsqx_file is required"
         assert convert_file is not None, "convert_file is required"
 
@@ -29,9 +31,13 @@ class VsqxConverter:
             if origin_note is None:
                 continue
             result: list[str] = []
+            for i in convert_file["multiple"]:
+                if i not in origin_note:
+                    continue
+                origin_note = origin_note.replace(i, convert_file["multiple"][i])
             for n in origin_note.split():
-                if n in convert_file:
-                    result.append(convert_file[n])
+                if n in convert_file["singular"]:
+                    result.append(convert_file["singular"][n])
                 else:
                     result.append(n)
             note.set("lock", "1")

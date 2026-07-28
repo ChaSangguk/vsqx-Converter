@@ -11,7 +11,8 @@ class Controller:
         self.vsqx_file: str = vsqx_file
         self.convert_type: str = convert_type
         self.convert_path = "list/convert.json"
-    def _get_convert_list_data(self, type: str | None = None) -> Dict[str, str]:
+
+    def _get_convert_list_data(self, type: str | None = None) -> Dict[str, Dict[str, str]]:
         if type is None:
             type = self.convert_type
         with open(self.convert_path, "r", encoding="utf-8") as f:
@@ -31,7 +32,7 @@ class Controller:
     def convert(self) -> None:
         vsqx_file = self._get_vsqx_file()
 
-        convert_file: Dict[str, str] = self._get_convert_list_data(self.convert_type)
+        convert_file: Dict[str, Dict[str, str]] = self._get_convert_list_data(self.convert_type)
 
         converter: vsqx_convert.VsqxConverter = vsqx_convert.VsqxConverter(vsqx_file, convert_file)
         f: bytes = converter.convert(vsqx_file)
