@@ -1,8 +1,22 @@
 {
-    "r" : "4",
-    "k" : "k",
-    "C" : "c",
-    "n" : "n",
-    "t" : "t",
-    "s" : "s"
+    "singular" : {
+        "r" : "4",
+        "k" : "k",
+        "C" : "c",
+        "n" : "n",
+        "t" : "t",
+        "s" : "s"
+    },
+    "multiple" : {
+        "ya" : "y a",
+        "yu" : "y u",
+        "yo" : "y o",
+        "oa" : "w a",
+        "k i" : "k' i",
+        "k ya" : "k' a",
+        "k yu" : "k' u",
+        "k yo" : "k' o",
+        "m ya" : "m' a",
+        "m yu" : "m' u"
+    }
 }

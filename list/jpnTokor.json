@@ -1,4 +1,5 @@
 {
+  "singular" : {
     "4" : "r",
     "k" : "k",
     "dZ" : "c",
@@ -9,4 +10,17 @@
     "J" : "n",
     "ts" : "c'",
     "tS" : "ch"
+  },
+  "multiple" : {
+    "y a" : "ya",
+    "y u" : "yu",
+    "y o" : "yo",
+    "w a" : "oa",
+    "k' i" : "k i",
+    "k' a" : "k ya",
+    "k' u" : "k yu",
+    "k' o" : "k yo",
+    "m' a" : "m ya",
+    "m' u" : "m yu"
+  }
 }
