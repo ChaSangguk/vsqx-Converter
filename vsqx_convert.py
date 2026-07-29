@@ -4,7 +4,12 @@ from lxml import etree # type: ignore
 '''
 vsqx 파일 내 vstrack, vspart, note내 <p> 값을 파싱하여 미리 준비된 리스트에 따라 변환후 저장
 '''
-
+''' 
+todo :
+update 2026-07-29
+    1. [ ] 파일 종류에 따라 namespace를 범용적으로 사용가능하게 수정
+    2. [ ] 단위 테스트 추가
+'''
 class VsqxConverter:
     NS: Dict[str, str] = {"v4": "http://www.yamaha.co.jp/vocaloid/schema/vsq4/"}
     vsqx_file: etree._ElementTree | None
@@ -25,7 +30,7 @@ class VsqxConverter:
         assert convert_file is not None, "convert_file is required"
 
         root: etree._Element = vsqx_file.getroot()
-
+        ns_uri = root.nsmap
         for note in root.findall(".//v4:note/v4:p", namespaces=VsqxConverter.NS):
             origin_note: str | None = note.text
             if origin_note is None:

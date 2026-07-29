@@ -3,7 +3,13 @@ from typing import Dict
 
 import lxml.etree as ET
 import vsqx_convert
-
+'''
+todo:
+update 2026-07-29
+    1. [ ] 변환 리스트 파일 경로를 고정된 주소가 아니라 외부에서 지정 가능하도록 개선
+    2. [ ] 오류 처리 개선
+    3. [ ] 로깅 파일 추가
+'''
 class Controller:
     convert_path: str
 
