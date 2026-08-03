@@ -6,7 +6,7 @@ vsqx 파일 내 vstrack, vspart, note내 <p> 값을 파싱하여 미리 준비�
 '''
 ''' 
 todo :
-update 2026-07-29
+update 2026-08-03
     1. [X] 파일 종류에 따라 namespace를 범용적으로 사용가능하게 수정
     2. [ ] 단위 테스트 추가
 '''

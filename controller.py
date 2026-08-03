@@ -3,6 +3,7 @@ from typing import Dict
 
 import lxml.etree as ET
 import vsqx_convert
+from error_controller import ErrorController
 '''
 todo:
 update 2026-07-29
@@ -17,30 +18,41 @@ class Controller:
         self.vsqx_file: str = vsqx_file
         self.convert_type: str = convert_type
         self.convert_path = "list/convert.json"
+        self.error_controller = ErrorController()
 
     def _get_convert_list_data(self, type: str | None = None) -> Dict[str, Dict[str, str]]:
         if type is None:
             type = self.convert_type
-        with open(self.convert_path, "r", encoding="utf-8") as f:
-            list_data: Dict[str, str] = json.load(f)
+        try:
+            with open(self.convert_path, "r", encoding="utf-8") as f:
+                list_data: Dict[str, str] = json.load(f)
 
-        file_path: str | None = list_data.get(type)
-        if file_path is None:
-            raise ValueError("타입 오류")
+            file_path: str | None = list_data.get(type)
+            if file_path is None:
+                raise KeyError(type)
 
-        with open(file_path, "r", encoding="utf-8") as convert_f:
-            return json.load(convert_f)
-    
+            with open(file_path, "r", encoding="utf-8") as convert_f:
+                return json.load(convert_f)
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as error:
+            self.error_controller.raise_error(error, "변환 리스트 읽기")
+            raise AssertionError("unreachable")
+
     def _get_vsqx_file(self) -> ET._ElementTree:
-        with open(self.vsqx_file, "rb") as f:
-            return ET.parse(f, parser=ET.XMLParser(strip_cdata=False, recover=True))
+        try:
+            with open(self.vsqx_file, "rb") as f:
+                return ET.parse(f, parser=ET.XMLParser(strip_cdata=False, recover=True))
+        except (FileNotFoundError, ET.XMLSyntaxError) as error:
+            self.error_controller.raise_error(error, "VSQX 파일 읽기")
+            raise AssertionError("unreachable")
 
     def convert(self) -> None:
-        vsqx_file = self._get_vsqx_file()
+        try:
+            vsqx_file = self._get_vsqx_file()
+            convert_file: Dict[str, Dict[str, str]] = self._get_convert_list_data(self.convert_type)
 
-        convert_file: Dict[str, Dict[str, str]] = self._get_convert_list_data(self.convert_type)
-
-        converter: vsqx_convert.VsqxConverter = vsqx_convert.VsqxConverter(vsqx_file, convert_file)
-        f: bytes = converter.convert(vsqx_file)
-        with open(self.vsqx_file.replace('.vsqx', '_updated.vsqx'), "wb") as f_out:
-            f_out.write(f)
+            converter: vsqx_convert.VsqxConverter = vsqx_convert.VsqxConverter(vsqx_file, convert_file)
+            f: bytes = converter.convert(vsqx_file)
+            with open(self.vsqx_file.replace('.vsqx', '_updated.vsqx'), "wb") as f_out:
+                f_out.write(f)
+        except (FileNotFoundError, json.JSONDecodeError, KeyError, ET.XMLSyntaxError) as error:
+            self.error_controller.raise_error(error, "변환 처리")
