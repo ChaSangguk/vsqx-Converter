@@ -2,7 +2,8 @@ import json
 from typing import Dict
 
 import lxml.etree as ET
-import vsqx_convert
+import model.vsqx_convert as vsqx_convert
+from config.setting import get_convert_list_data
 from controller.error_controller import ErrorController
 import logging
 '''
@@ -27,15 +28,7 @@ class Controller:
             type = self.convert_type
         try:
             logger.info(f"변환 리스트 읽기 시작: {self.convert_path}")
-            with open(self.convert_path, "r", encoding="utf-8") as f:
-                list_data: Dict[str, str] = json.load(f)
-
-            file_path: str | None = list_data.get(type)
-            if file_path is None:
-                raise KeyError(type)
-
-            with open(file_path, "r", encoding="utf-8") as convert_f:
-                return json.load(convert_f)
+            return get_convert_list_data(type, self.convert_path)
         except (FileNotFoundError, json.JSONDecodeError, KeyError) as error:
             logger.error(f"변환 리스트 읽기 중 오류가 발생했습니다: {error}")
             self.error_controller.raise_error(error, "변환 리스트 읽기")
