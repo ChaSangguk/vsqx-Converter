@@ -24,8 +24,11 @@ class VsqxConverter:
         if convert_file is None:
             convert_file = self.convert_file
 
-        assert vsqx_file is not None, "vsqx_file is required"
-        assert convert_file is not None, "convert_file is required"
+        if vsqx_file is None:
+            raise FileNotFoundError("vsqx_file is required")
+    
+        if convert_file is None:
+            raise FileNotFoundError("convert_file is required")
 
         root: etree._Element = vsqx_file.getroot()
         ns_uri: Dict[str, str] = root.nsmap

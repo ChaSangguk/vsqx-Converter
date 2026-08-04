@@ -1,8 +1,9 @@
-import controller
+import controller.controller as controller
 import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 from typing import Literal
+import config.logger as logger
 '''todo:
 update 2026-07-29
 - [ ] GUI 개선
@@ -18,6 +19,7 @@ class VsqxConverterGUI:
     window: tk.Tk
 
     def __init__(self) -> None:
+        logger.logging.info("Starting GUI...")
         self.window = tk.Tk()
         self.window.title("VSQX Converter")
         self.window.geometry("120x120")

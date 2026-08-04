@@ -3,7 +3,7 @@ from typing import Dict
 
 import lxml.etree as ET
 import vsqx_convert
-from error_controller import ErrorController
+from controller.error_controller import ErrorController
 '''
 todo:
 update 2026-07-29
@@ -14,10 +14,10 @@ update 2026-07-29
 class Controller:
     convert_path: str
 
-    def __init__(self, vsqx_file: str, convert_type: str) -> None:
+    def __init__(self, vsqx_file: str, convert_type: str, convert_path: str = "list/convert.json") -> None:
         self.vsqx_file: str = vsqx_file
         self.convert_type: str = convert_type
-        self.convert_path = "list/convert.json"
+        self.convert_path = convert_path
         self.error_controller = ErrorController()
 
     def _get_convert_list_data(self, type: str | None = None) -> Dict[str, Dict[str, str]]:
