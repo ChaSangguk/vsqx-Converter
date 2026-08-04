@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
-
-
+import logging
+logger = logging.getLogger(__name__)
 class ErrorController:
     def raise_error(self, error: Exception, context: str) -> None:
         if isinstance(error, FileNotFoundError):

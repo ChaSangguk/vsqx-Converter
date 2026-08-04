@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 from typing import Literal
-import config.logger as logger
+import logging
 '''todo:
 update 2026-07-29
 - [ ] GUI 개선
@@ -15,11 +15,11 @@ update 2026-07-29
 - [ ] 변환 완료시 저장 위치 변경 가능하도록 개선
 - [ ] 멀티 스레딩 기반 비동기 처리로 GUI 멈춤 방지
 '''
+logger = logging.getLogger(__name__)
 class VsqxConverterGUI:
     window: tk.Tk
 
     def __init__(self) -> None:
-        logger.logging.info("Starting GUI...")
         self.window = tk.Tk()
         self.window.title("VSQX Converter")
         self.window.geometry("120x120")
@@ -39,8 +39,11 @@ class VsqxConverterGUI:
                 try:
                     controller.Controller(file, type).convert()
                 except ValueError as e:
+                    logger.error(f"파일 처리 중 오류가 발생했습니다: {e}")
                     messagebox.showerror("오류", f"파일 처리 중 오류가 발생했습니다: {e}")
             messagebox.showinfo("완료", "변환이 완료되었습니다.")
-
-
-gui = VsqxConverterGUI()
+if __name__ == "__main__":
+    from config import logger as config_logger
+    import logging
+    config_logger.set_logger()
+    gui = VsqxConverterGUI()
