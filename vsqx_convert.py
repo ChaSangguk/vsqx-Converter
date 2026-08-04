@@ -58,4 +58,5 @@ class VsqxConverter:
                         result.append(n)
                 note.set("lock", "1")
                 note.text = etree.CDATA(" ".join(result))
+        logger.info(f"파일 변환 성공")
         return etree.tostring(root, pretty_print=True, encoding="utf-8", xml_declaration=True)

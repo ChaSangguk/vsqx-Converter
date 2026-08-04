@@ -53,7 +53,7 @@ class Controller:
 
     def convert(self) -> None:
         try:
-            logger.info(f"파일 변환시작: {self.vsqx_file}")
+            logger.info(f"파일 변환 준비: {self.vsqx_file}")
             vsqx_file = self._get_vsqx_file()
             convert_file: Dict[str, Dict[str, str]] = self._get_convert_list_data(self.convert_type)
 

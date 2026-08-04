@@ -1,13 +1,15 @@
 import logging
-
+import datetime
+import os
 def set_logger():
     ''' 로거 설정 함수'''
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
+    os.mkdir("log") if not os.path.exists("log") else None
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     stream_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler("lo.log")
+    file_handler = logging.FileHandler("log/"+datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+".log")
 
     stream_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)

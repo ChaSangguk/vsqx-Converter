@@ -1,4 +1,5 @@
 {
     "jpnTokor": "list/jpnTokor.json",
-    "korTojpn": "list/korTojpn.json"
+    "korTojpn": "list/korTojpn.json",
+    "jpnToeng": "list/jpnToeng.json"
 }
