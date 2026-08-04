@@ -27,6 +27,9 @@ class VsqxConverterGUI:
         self.window.mainloop()
 
     def create_widgets(self) -> None:
+        logger.info("GUI 위젯 생성 시작")
+        # todo - 출발 드롭박스 도착 드롭박스 이 형태로 변경
+        tk.Button(self.window, text="Japanese to English", command=lambda: self.file_dialog("jpnToeng")).pack(pady=10)
         tk.Button(self.window, text="Japanese to Korean", command=lambda: self.file_dialog("jpnTokor")).pack(pady=10)
         tk.Button(self.window, text="Korean to Japanese", command=lambda: self.file_dialog("korTojpn")).pack(pady=10)
 
@@ -42,8 +45,3 @@ class VsqxConverterGUI:
                     logger.error(f"파일 처리 중 오류가 발생했습니다: {e}")
                     messagebox.showerror("오류", f"파일 처리 중 오류가 발생했습니다: {e}")
             messagebox.showinfo("완료", "변환이 완료되었습니다.")
-if __name__ == "__main__":
-    from config import logger as config_logger
-    import logging
-    config_logger.set_logger()
-    gui = VsqxConverterGUI()
