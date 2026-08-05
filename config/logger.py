@@ -9,7 +9,7 @@ def set_logger():
     os.mkdir("log") if not os.path.exists("log") else None
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     stream_handler = logging.StreamHandler()
-    file_handler = logging.FileHandler("log/"+datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+".log")
+    file_handler = logging.FileHandler("log/"+datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")+".log", encoding='utf-8')
 
     stream_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
