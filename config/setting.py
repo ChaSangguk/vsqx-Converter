@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import Any, Dict
 import logging
 
+__version__ = "0.9.8"
 logger = logging.getLogger(__name__)
 
 def read_json_file(file_path: str) -> Dict[str, Any]:

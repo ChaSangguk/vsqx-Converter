@@ -10,6 +10,7 @@ todo :
 update 2026-08-03
     1. [X] 파일 종류에 따라 namespace를 범용적으로 사용가능하게 수정
     2. [ ] 단위 테스트 추가
+    3. [ ] 변환 리스트 추가 완성
 '''
 logger = logging.getLogger(__name__)
 

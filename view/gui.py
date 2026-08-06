@@ -4,7 +4,7 @@ import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 from typing import Literal
 import logging
-import asyncio
+
 '''todo:
 update 2026-07-29
 - [ ] GUI 개선
@@ -23,7 +23,7 @@ class VsqxConverterGUI:
     def __init__(self) -> None:
         self.window = tk.Tk()
         self.window.title("VSQX Converter")
-        self.window.geometry("120x120")
+        self.window.geometry("120x240")
         self.create_widgets()
         self.window.mainloop()
 
@@ -42,10 +42,9 @@ class VsqxConverterGUI:
         if not file_path:
             logger.info("파일 선택 취소")
             return
-        for file in file_path:
-            try:
-                controller.convert(file)
-            except ValueError as e:
-                logger.error(f"파일 처리 중 오류가 발생했습니다: {e}")
-                messagebox.showerror("오류", f"파일 처리 중 오류가 발생했습니다: {e}")
-        messagebox.showinfo("완료", "변환이 완료되었습니다.")
+        
+        controller.multi_convert(file_path, self.on_convert_finish)
+
+    def on_convert_finish(self, fail: int, success: int) -> None:
+        logger.info(f"성공 : {success}, 실패 : {fail}")
+        messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success}")

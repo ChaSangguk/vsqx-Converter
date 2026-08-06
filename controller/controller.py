@@ -6,6 +6,8 @@ import model.vsqx_convert as vsqx_convert
 from config.setting import get_convert_list_data
 from controller.error_controller import ErrorController
 import logging
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 '''
 todo:
 update 2026-08-05
@@ -55,3 +57,23 @@ class Controller:
         except (FileNotFoundError, json.JSONDecodeError, KeyError, ET.XMLSyntaxError) as error:
             logger.error(f"파일 처리 중 오류가 발생했습니다: {error}")
             self.error_controller.raise_error(error, "변환 처리")
+    def multi_convert(self, vsqx_file_name : tuple[str,...],OnFinish: callable):
+
+        thread = threading.Thread(target=self._background_convert_task, args=(vsqx_file_name, OnFinish))
+
+        thread.daemon = True
+        thread.start()
+    def _background_convert_task(self, vsqx_file_names : tuple[str, ...],OnFinish: callable) -> None:
+        fail = 0
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            futures = {executor.submit(self.convert, file): file for file in vsqx_file_names}
+            for future in as_completed(futures):
+                file = futures[future]
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.error(f"파일 처리 중 오류가 발생했습니다: {e}")
+                    self.error_controller.raise_error(e, f"파일 처리 중 오류 발생: {file}")
+                    fail += 1
+        if OnFinish:
+            OnFinish(fail, len(vsqx_file_names) - fail)
