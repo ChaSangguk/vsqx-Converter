@@ -2,8 +2,10 @@ from controller.controller import Controller
 import tkinter as tk
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
+import tkinter.ttk as ttk
 from typing import Literal
 import logging
+from config.setting import load_lang_list
 
 '''todo:
 update 2026-07-29
@@ -23,17 +25,21 @@ class VsqxConverterGUI:
     def __init__(self) -> None:
         self.window = tk.Tk()
         self.window.title("VSQX Converter")
-        self.window.geometry("120x240")
+        self.window.geometry(f"{self.window.winfo_screenwidth() // 2}x{self.window.winfo_screenheight() // 2}")
         self.create_widgets()
         self.window.mainloop()
 
     def create_widgets(self) -> None:
         logger.info("GUI 위젯 생성 시작")
+        lang_list = load_lang_list()
         # todo - 출발 드롭박스 도착 드롭박스 이 형태로 변경
-        tk.Button(self.window, text="Japanese to English", command=lambda: self.file_dialog("jpnToeng")).pack(pady=10)
-        tk.Button(self.window, text="Japanese to Korean", command=lambda: self.file_dialog("jpnTokor")).pack(pady=10)
-        tk.Button(self.window, text="Korean to Japanese", command=lambda: self.file_dialog("korTojpn")).pack(pady=10)
-
+        tk.Label(self.window, text="출발 언어").pack(pady=5)
+        self.from_lang_var = tk.StringVar(value=lang_list[0][0])
+        ttk.Combobox(self.window, textvariable=self.from_lang_var, values=lang_list[0], state="readonly").pack(pady=5)
+        tk.Label(self.window, text="도착 언어").pack(pady=5)
+        self.to_lang_var = tk.StringVar(value=lang_list[1][0])
+        ttk.Combobox(self.window, textvariable=self.to_lang_var, values=lang_list[1], state="readonly").pack(pady=5)
+        tk.Button(self.window, text="파일 선택", command=lambda: self.file_dialog(self.from_lang_var.get() + "To" + self.to_lang_var.get())).pack(pady=5)
     def file_dialog(self, type: str) -> None:
         file_path: tuple[str, ...] | Literal[""] = filedialog.askopenfilenames(
             filetypes=[("VSQX 파일", "*.vsqx")]

@@ -1,5 +1,5 @@
 {
-    "jpnTokor": "list/jpnTokor.json",
-    "korTojpn": "list/korTojpn.json",
-    "jpnToeng": "list/jpnToeng.json"
+    "jpnTokor": {"from": "jpn", "to": "kor", "path": "list/jpnTokor.json"},
+    "korTojpn": {"from": "kor", "to": "jpn", "path": "list/korTojpn.json"},
+    "jpnToeng": {"from": "jpn", "to": "eng", "path": "list/jpnToeng.json"}
 }
