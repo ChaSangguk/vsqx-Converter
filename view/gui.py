@@ -39,12 +39,12 @@ class VsqxConverterGUI:
         tk.Label(self.window, text="도착 언어").pack(pady=5)
         self.to_lang_var = tk.StringVar(value=lang_list[1][0])
         ttk.Combobox(self.window, textvariable=self.to_lang_var, values=lang_list[1], state="readonly").pack(pady=5)
-        tk.Button(self.window, text="파일 선택", command=lambda: self.file_dialog(self.from_lang_var.get() + "To" + self.to_lang_var.get())).pack(pady=5)
-    def file_dialog(self, type: str) -> None:
+        tk.Button(self.window, text="파일 선택", command=lambda: self.file_dialog(self.from_lang_var.get(),self.to_lang_var.get())).pack(pady=5)
+    def file_dialog(self, from_lang: str, to_lang: str) -> None:
         file_path: tuple[str, ...] | Literal[""] = filedialog.askopenfilenames(
             filetypes=[("VSQX 파일", "*.vsqx")]
         )
-        controller = Controller(type)
+        controller = Controller(from_lang,to_lang)
         if not file_path:
             logger.info("파일 선택 취소")
             return
@@ -53,4 +53,4 @@ class VsqxConverterGUI:
 
     def on_convert_finish(self, fail: int, success: int) -> None:
         logger.info(f"성공 : {success}, 실패 : {fail}")
-        messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success}")
+        self.window.after(0, lambda: messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success}"))
