@@ -51,9 +51,9 @@ class VsqxConverterGUI:
         logger.info(f"선택된 파일: {file_path}")
         controller.multi_convert(file_path, self.on_convert_finish)
 
-    def on_convert_finish(self, fail: int, success: int, failed_files: list[str]) -> None:
+    def on_convert_finish(self, fail: int, success: int, failed_files: list[list[str]]) -> None:
         logger.info(f"성공 : {success}, 실패 : {fail}")
-        f = '\n'.join(failed_files)
+        f = '\n'.join([f"{file}:\n {error}" for file, error in failed_files])
         if failed_files:
             logger.info(f"실패한 파일: {failed_files}")
-        self.window.after(0, lambda: messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success} {f}"))
+        self.window.after(0, lambda: messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success} \n{f}"))

@@ -83,7 +83,7 @@ class Controller:
                     logger.info(f"파일 변환 성공: {file}")
                 except Exception as error:
                     fail += 1
-                    failed_files.append(file)
+                    failed_files.append([file, str(error)])
                     logger.error(f"파일 처리 중 오류가 발생했습니다: {error}")
 
         if OnFinish:

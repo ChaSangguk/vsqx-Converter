@@ -36,4 +36,4 @@ def get_convert_list_data(convert_type: str, convert_path: str = "list/convert.j
 def load_lang_list(file_path: str = "list/convert.json") -> list[list[str]]:
     logger.info(f"언어 리스트 데이터 가져오기 from {file_path}")
     data = read_json_file(file_path)
-    return [list(set(item['from'] for item in data.values())), list(set(item['to'] for item in data.values()))]
+    return [list(dict.fromkeys(item['from'] for item in data.values())), list(dict.fromkeys(item['to'] for item in data.values()))]
