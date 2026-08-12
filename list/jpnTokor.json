@@ -9,18 +9,19 @@
     "S" : "sh",
     "J" : "n",
     "ts" : "c'",
-    "tS" : "ch"
+    "tS" : "ch",
+    "C" : "h"
   },
   "multiple" : {
-    "y a" : "ya",
-    "y u" : "yu",
-    "y o" : "yo",
+    "y a" : "ja",
+    "y u" : "ju",
+    "y o" : "jo",
     "w a" : "oa",
     "k' i" : "k i",
-    "k' a" : "k ya",
-    "k' u" : "k yu",
-    "k' o" : "k yo",
-    "m' a" : "m ya",
-    "m' u" : "m yu"
+    "k' a" : "k ja",
+    "k' u" : "k ju",
+    "k' o" : "k jo",
+    "m' a" : "m ja",
+    "m' u" : "m ju"
   }
 }
