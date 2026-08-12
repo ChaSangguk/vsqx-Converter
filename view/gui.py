@@ -32,7 +32,6 @@ class VsqxConverterGUI:
     def create_widgets(self) -> None:
         logger.info("GUI 위젯 생성 시작")
         lang_list = load_lang_list()
-        # todo - 출발 드롭박스 도착 드롭박스 이 형태로 변경
         tk.Label(self.window, text="출발 언어").pack(pady=5)
         self.from_lang_var = tk.StringVar(value=lang_list[0][0])
         ttk.Combobox(self.window, textvariable=self.from_lang_var, values=lang_list[0], state="readonly").pack(pady=5)
@@ -48,9 +47,13 @@ class VsqxConverterGUI:
         if not file_path:
             logger.info("파일 선택 취소")
             return
-        
+        file_path = tuple(dict.fromkeys(file_path))  # 중복 제거
+        logger.info(f"선택된 파일: {file_path}")
         controller.multi_convert(file_path, self.on_convert_finish)
 
-    def on_convert_finish(self, fail: int, success: int) -> None:
+    def on_convert_finish(self, fail: int, success: int, failed_files: list[str]) -> None:
         logger.info(f"성공 : {success}, 실패 : {fail}")
-        self.window.after(0, lambda: messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success}"))
+        f = '\n'.join(failed_files)
+        if failed_files:
+            logger.info(f"실패한 파일: {failed_files}")
+        self.window.after(0, lambda: messagebox.showinfo("완료", f"변환이 완료되었습니다. 실패: {fail}, 성공: {success} {f}"))
