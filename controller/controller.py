@@ -8,7 +8,7 @@ import lxml.etree as ET
 
 import model.vsqx_convert as vsqx_convert
 from config.setting import get_convert_list_data
-
+from pathlib import Path
 '''
 todo:
 update 2026-08-05
@@ -20,10 +20,15 @@ update 2026-08-05
 logger = logging.getLogger(__name__)
 
 
-class Controller:
-    convert_path: str
+LIST_DIR = BASE_DIR / "list"
+CONVERT_JSON_PATH = LIST_DIR / "convert.json"
 
-    def __init__(self, from_lang: str, to_lang: str, convert_path: str = "list/convert.json") -> None:
+
+class Controller:
+    convert_path: str | Path
+    convert_type: str
+
+    def __init__(self, from_lang: str, to_lang: str, convert_path: str | Path = CONVERT_JSON_PATH) -> None:
         self.convert_type = f"{from_lang}To{to_lang}"
         self.convert_path = convert_path
 
