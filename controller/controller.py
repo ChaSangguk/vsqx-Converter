@@ -19,7 +19,7 @@ update 2026-08-05
 
 logger = logging.getLogger(__name__)
 
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 LIST_DIR = BASE_DIR / "list"
 CONVERT_JSON_PATH = LIST_DIR / "convert.json"
 
