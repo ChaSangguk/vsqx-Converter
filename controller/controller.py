@@ -1,20 +1,13 @@
-import json
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Callable, Dict
+from typing import Callable
 
-import lxml.etree as ET
-
-import model.vsqx_convert as vsqx_convert
-from config.setting import BASE_DIR, get_convert_list_data
-from controller.errorController import (
-    ConversionError,
-    ConversionExecutionError,
-    ConvertListError,
-    VSQXFileReadError,
-)
+from config.setting import BASE_DIR
+from controller.errorController import ConversionExecutionError
+from model.conversion_request import ConversionRequest
+from service.conversion_service import VsqxConversionService
 
 '''
 todo:
@@ -37,65 +30,17 @@ class Controller:
     def __init__(self, from_lang: str, to_lang: str, convert_path: str | Path = CONVERT_JSON_PATH) -> None:
         self.convert_type = f"{from_lang}To{to_lang}"
         self.convert_path = convert_path
-
-    def _get_convert_list_data(self, type: str | None = None) -> Dict[str, Dict[str, str]] | None:
-        if type is None:
-            type = self.convert_type
-
-        try:
-            logger.info(f"변환 리스트 읽기 시작: {self.convert_path}")
-            return get_convert_list_data(type, self.convert_path)
-        except (FileNotFoundError, json.JSONDecodeError, KeyError, TypeError) as error:
-            raise ConvertListError(f"변환 규칙 로드 실패: {self.convert_path} ({type})") from error
-
-    def _get_vsqx_file(self, vsqx_file: str) -> ET._ElementTree:
-        try:
-            with open(vsqx_file, "rb") as f:
-                logger.info(f"VSQX 파일 읽기 시작: {vsqx_file}")
-                return ET.parse(f, parser=ET.XMLParser(strip_cdata=False, recover=True))
-        except FileNotFoundError as error:
-            raise VSQXFileReadError(f"VSQX 파일을 찾을 수 없습니다: {vsqx_file}") from error
-        except PermissionError as error:
-            raise VSQXFileReadError(f"VSQX 파일 접근 권한이 없습니다: {vsqx_file}") from error
-        except (OSError, ET.XMLSyntaxError) as error:
-            raise VSQXFileReadError(f"VSQX 파일 형식이 올바르지 않습니다: {vsqx_file}") from error
-
-    def _build_output_path(self, vsqx_file_name: str) -> str:
-        output_path = vsqx_file_name.replace(".vsqx", "_updated.vsqx")
-        if Path(output_path).exists():
-            original_path = Path(output_path)
-            stem = original_path.stem
-            suffix = original_path.suffix
-            counter = 1
-            while True:
-                candidate = str(original_path.with_name(f"{stem}_{counter}{suffix}"))
-                if not Path(candidate).exists():
-                    return candidate
-                counter += 1
-        return output_path
+        self.service = VsqxConversionService(convert_path=convert_path)
 
     def convert(self, vsqx_file_name: str) -> None:
-        try:
-            logger.info(f"파일 변환 준비: {vsqx_file_name}")
-            vsqx_file: ET._ElementTree = self._get_vsqx_file(vsqx_file_name)
-            convert_file: Dict[str, Dict[str, str]] | None = self._get_convert_list_data(self.convert_type)
-
-            if not convert_file:
-                raise ConvertListError(f"변환 규칙이 비어 있습니다: {self.convert_type}")
-
-            converter: vsqx_convert.VsqxConverter = vsqx_convert.VsqxConverter(vsqx_file, convert_file)
-            converted_data: bytes = converter.convert(vsqx_file)
-
-            output_path = self._build_output_path(vsqx_file_name)
-            with open(output_path, "wb") as f_out:
-                f_out.write(converted_data)
-            logger.info(f"파일 변환 성공: {vsqx_file_name} -> {output_path}")
-        except (ConvertListError, VSQXFileReadError, ConversionError) as error:
-            logger.exception(f"변환 실패: {vsqx_file_name}")
-            raise ConversionExecutionError(f"변환 처리 실패: {vsqx_file_name}: {error}") from error
-        except OSError as error:
-            logger.exception(f"출력 파일 저장 실패: {vsqx_file_name}")
-            raise ConversionExecutionError(f"변환 결과 저장 실패: {vsqx_file_name}: {error}") from error
+        request = ConversionRequest(
+            file_path=vsqx_file_name,
+            convert_type=self.convert_type,
+            convert_path=self.convert_path,
+        )
+        result = self.service.convert_file(request)
+        if not result.success:
+            raise ConversionExecutionError(result.error_message or f"변환 처리 실패: {vsqx_file_name}")
 
     def multi_convert(
         self,
@@ -111,21 +56,35 @@ class Controller:
         OnFinish: Callable[[int, int, list[tuple[str, str]]], None],
     ) -> None:
         vsqx_file_names = tuple(dict.fromkeys(vsqx_file_names))
-        fail = 0
-        success = 0
-        failed_files: list[tuple[str, str]] = []
+        requests = [
+            ConversionRequest(
+                file_path=file,
+                convert_type=self.convert_type,
+                convert_path=self.convert_path,
+            )
+            for file in vsqx_file_names
+        ]
 
         with ThreadPoolExecutor(max_workers=2) as executor:
-            futures = {executor.submit(self.convert, file): file for file in vsqx_file_names}
+            futures = {executor.submit(self.service.convert_file, request): request.file_path for request in requests}
+            failed_files: list[tuple[str, str]] = []
+            success = 0
+            fail = 0
+
             for future in as_completed(futures):
                 file = futures[future]
                 try:
-                    future.result()
-                    success += 1
-                    logger.info(f"파일 변환 성공: {file}")
+                    result = future.result()
+                    if result.success:
+                        success += 1
+                        logger.info(f"파일 변환 성공: {file}")
+                    else:
+                        fail += 1
+                        failed_files.append((str(file), result.error_message or "알 수 없는 오류"))
+                        logger.error(f"파일 처리 중 오류가 발생했습니다: {file}: {result.error_message}")
                 except Exception as error:
                     fail += 1
-                    failed_files.append((file, str(error)))
+                    failed_files.append((str(file), str(error)))
                     logger.error(f"파일 처리 중 오류가 발생했습니다: {file}: {error}")
 
         if OnFinish:
